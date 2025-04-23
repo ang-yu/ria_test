@@ -16,16 +16,19 @@ v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/li
 
 <!-- badges: end -->
 
-*crumble* implements a modern, unified estimation strategy for common
-mediation estimands: natural effects (Pearl 2022), organic effects (Lok
-2015), interventional effects (Vansteelandt and Daniel 2017), recanting
-twins (Vo et al. 2024), in causal inference in combination with modified
-treatment policies. It makes use of recent advancements in
-“Riesz-learning” to estimate a set of required nuisance parameters using
-deep learning. The result is a software package that is capable of
-estimating mediation effects with binary, categorical, continuous, or
-multivariate exposures with high-dimensional mediators and
-mediator-outcome confounders using machine learning.
+*crumble* implements a modern, unified estimation strategy (Liu et al.
+2024) for common mediation estimands: natural effects (Pearl 2022),
+organic effects (Lok 2015), interventional effects (Vansteelandt and
+Daniel 2017), recanting twins (Vo et al. 2024), in causal inference in
+combination with modified treatment policies. It makes use of recent
+advancements in “Riesz-learning” to estimate a set of required nuisance
+parameters using deep learning. The result is a software package that is
+capable of estimating mediation effects with binary, categorical,
+continuous, or multivariate exposures with high-dimensional mediators
+and mediator-outcome confounders using machine learning.
+
+This work was supported by the National Institute on Drug Abuse
+\[R00DA042127\].
 
 ### Installation
 
@@ -274,6 +277,14 @@ crumble(
 
 <div id="refs" class="references csl-bib-body hanging-indent"
 entry-spacing="0">
+
+<div id="ref-liu2024general" class="csl-entry">
+
+Liu, Richard, Nicholas T Williams, Kara E Rudolph, and Iván Dı́az. 2024.
+“General Targeted Machine Learning for Modern Causal Mediation
+Analysis.” *arXiv Preprint arXiv:2408.14620*.
+
+</div>
 
 <div id="ref-lok2015" class="csl-entry">
 

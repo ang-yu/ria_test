@@ -1,7 +1,7 @@
 Package: crumble
 Type: Package
 Title: Flexible and General Mediation Analysis Using Riesz Representers
-Version: 0.1.0
+Version: 0.1.2
 Authors@R: 
     c(person(given = "Nicholas",
              family = "Williams",
@@ -46,9 +46,10 @@ Imports:
     data.table,
     coro,
     generics,
-    lmtp, 
-    mlr3superlearner, 
-    progressr
+    lmtp,
+    mlr3superlearner,
+    progressr,
+    ife (>= 0.1.0)
 Suggests: 
     testthat (>= 3.0.0),
     truncnorm, 
