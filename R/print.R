@@ -23,7 +23,15 @@ print_estimate <- function(x, name) {
 									"oie" = "Organic Indirect Effect",
 									"ride" = "Randomized Direct Effect",
 									"riie" = "Randomized Indirect Effect",
-									"te" = "RIA Test")
+									"rate" = "Randomized Average Effect",
+									"ate_rate_diff" = "ATE-ATER")
 	cli_h3("{.emph {title}}")
-	print(x)
+
+	est <- round(x@x, digits = 6)
+	se <- round(x@std_error, digits = 6)
+	ci <- round(x@conf_int, digits = 6)
+
+	cat(sprintf("Estimate: %.6f\n", est))
+	cat(sprintf("Std. Error: %.6f\n", se))
+	cat(sprintf("95%% CI: [%.6f, %.6f]\n", ci[1], ci[2]))
 }

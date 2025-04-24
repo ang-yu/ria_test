@@ -31,7 +31,7 @@ This work was supported by the National Institute on Drug Abuse [R00DA042127].
 ### Installation
 
 ```{r eval=FALSE}
-remotes::install_github("nt-williams/crumble")
+remotes::install_github("ang-yu/ria_test")
 ```
 
 ### Features
