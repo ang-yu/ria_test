@@ -41,6 +41,8 @@ calc_estimates_rt <- function(eif_ns, eif_rs, weights) {
 calc_estimates_te <- function(eif_ns, eif_rs, weights) {
 	list(
 		ate = eif_ns[["111"]] - eif_ns[["000"]],
+		ride = eif_rs[["1100"]] - eif_rs[["0000"]],
+		riie = eif_rs[["1111"]] - eif_rs[["1100"]],
 		rate = eif_rs[["1111"]] - eif_rs[["0000"]],
 		ate_rate_diff = eif_ns[["111"]] - eif_ns[["000"]] - (eif_rs[["1111"]] - eif_rs[["0000"]])
 	)
