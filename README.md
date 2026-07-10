@@ -27,40 +27,11 @@ The implementation uses Riesz-regression machinery adapted from the
 upstream mediation-estimation codebase for the total-effect contrast and
 associated uncertainty estimates.
 
-This work was supported by the National Institute on Drug Abuse
-\[R00DA042127\].
-
 ### Installation
 
 ``` r
 remotes::install_github("ang-yu/ria_test")
 ```
-
-### Features
-
-| Feature                   | Status  |
-|---------------------------|:-------:|
-| Recanting twins           |    ✓    |
-| Natural effects           |    ✓    |
-| Organic effects           |    ✓    |
-| Interventional effects    |    ✓    |
-| Modified treatment Policy |    ✓    |
-| Static intervention       |    ✓    |
-| Dynamic intervention      |    ✓    |
-| Continuous treatment      |    ✓    |
-| Binary treatment          |    ✓    |
-| Categorical treatment     |    ✓    |
-| Multivariate treatment    |    ✓    |
-| Missingness in treatment  |         |
-| Continuous outcome        |    ✓    |
-| Binary outcome            |    ✓    |
-| Censored outcome          |    ✓    |
-| Survey weights            | Planned |
-| Super learner             |    ✓    |
-| Clustered data            | Planned |
-| Parallel processing       |    ✓    |
-| GPU support               |    ✓    |
-| Progress bars             |    ✓    |
 
 ### Example(s)
 
@@ -272,49 +243,3 @@ ria.test(
 #>     Std. error: 0.0261
 #>         95% CI: (-0.0497, 0.0525)
 ```
-
-#### References
-
-<div id="refs" class="references csl-bib-body hanging-indent"
-entry-spacing="0">
-
-<div id="ref-liu2024general" class="csl-entry">
-
-Liu, Richard, Nicholas T Williams, Kara E Rudolph, and Iván Dı́az. 2024.
-“General Targeted Machine Learning for Modern Causal Mediation
-Analysis.” *arXiv Preprint arXiv:2408.14620*.
-
-</div>
-
-<div id="ref-lok2015" class="csl-entry">
-
-Lok, Judith J. 2015. “Organic Direct and Indirect Effects with
-Post-Treatment Common Causes of Mediator and Outcome.”
-<https://doi.org/10.48550/ARXIV.1510.02753>.
-
-</div>
-
-<div id="ref-pearl2022" class="csl-entry">
-
-Pearl, Judea. 2022. “Direct and Indirect Effects.” In, 373–92. ACM.
-<https://doi.org/10.1145/3501714.3501736>.
-
-</div>
-
-<div id="ref-vansteelandt2017" class="csl-entry">
-
-Vansteelandt, Stijn, and Rhian M. Daniel. 2017. “Interventional Effects
-for Mediation Analysis with Multiple Mediators.” *Epidemiology* 28 (2):
-258–65. <https://doi.org/10.1097/ede.0000000000000596>.
-
-</div>
-
-<div id="ref-vo2024" class="csl-entry">
-
-Vo, Tat-Thang, Nicholas Williams, Richard Liu, Kara E. Rudolph, and Ivan
-Dıaz. 2024. “Recanting Twins: Addressing Intermediate Confounding in
-Mediation Analysis.” <https://doi.org/10.48550/ARXIV.2401.04450>.
-
-</div>
-
-</div>

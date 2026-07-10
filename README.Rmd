@@ -1,6 +1,5 @@
 ---
 output: github_document
-bibliography: inst/references.bib
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -26,39 +25,11 @@ knitr::opts_chunk$set(
 
 The implementation uses Riesz-regression machinery adapted from the upstream mediation-estimation codebase for the total-effect contrast and associated uncertainty estimates.
 
-This work was supported by the National Institute on Drug Abuse [R00DA042127].
-
 ### Installation
 
 ```{r eval=FALSE}
 remotes::install_github("ang-yu/ria_test")
 ```
-
-### Features
-
-| Feature                   | Status  |
-|---------------------------|:-------:|
-| Recanting twins           |    ✓    |
-| Natural effects           |    ✓    |
-| Organic effects           |    ✓    |
-| Interventional effects    |    ✓    |
-| Modified treatment Policy |    ✓    |
-| Static intervention       |    ✓    |
-| Dynamic intervention      |    ✓    |
-| Continuous treatment      |    ✓    |
-| Binary treatment          |    ✓    |
-| Categorical treatment     |    ✓    |
-| Multivariate treatment    |    ✓    |
-| Missingness in treatment  |         |
-| Continuous outcome        |    ✓    |
-| Binary outcome            |    ✓    |
-| Censored outcome          |    ✓    |
-| Survey weights            | Planned |
-| Super learner             |    ✓    |
-| Clustered data            | Planned |
-| Parallel processing       |    ✓    |
-| GPU support               |    ✓    |
-| Progress bars             |    ✓    |
 
 ### Example(s)
 
@@ -270,5 +241,3 @@ ria.test(
 #>     Std. error: 0.0261
 #>         95% CI: (-0.0497, 0.0525)
 ```
-
-#### References
