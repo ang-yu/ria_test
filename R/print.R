@@ -1,10 +1,10 @@
 #' @importFrom cli cli_div cli_rule cli_end cli_h3
 #' @importFrom purrr iwalk
 #' @export
-print.crumble <- function(x, ...) {
+print.ria.test <- function(x, ...) {
 	cat("\n")
 	d <- cli_div(theme = list(rule = list("line-type" = "double")))
-	cli_rule(left = "Results {.fn crumble}")
+	cli_rule(left = "Results {.fn ria.test}")
 	cli_end(d)
 	iwalk(x$estimates, print_estimate)
 }

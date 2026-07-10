@@ -1,4 +1,4 @@
-#' Crumble control parameters
+#' ria.test control parameters
 #'
 #' @param crossfit_folds [\code{numeric(1)}]\cr The number of crossfit folds.
 #' @param mlr3superlearner_folds [\code{numeric(1)}]\cr The number of `mlr3superlearner` folds.
@@ -13,8 +13,8 @@
 #' @export
 #'
 #' @examples
-#' if (torch::torch_is_installed()) crumble_control(crossfit_folds = 5)
-crumble_control <- function(crossfit_folds = 10L,
+#' if (torch::torch_is_installed()) ria.test.control(crossfit_folds = 5)
+ria.test.control <- function(crossfit_folds = 10L,
 														mlr3superlearner_folds = 10L,
 														zprime_folds = 1L,
 														epochs = 100L,

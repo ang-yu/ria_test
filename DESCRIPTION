@@ -1,13 +1,13 @@
-Package: crumble
+Package: ria.test
 Type: Package
-Title: Testing Natural Mediation Effects Against Randomized Interventional Analogues
+Title: ria.test
 Version: 0.1.3
 Authors@R: 
     c(person(given = "Ang",
              family = "Yu",
              role = c("aut", "cre", "cph"),
              email = "ang_yu@outlook.com",
-             comment = c("Author and copyright holder of ria_test extensions beyond crumble")),
+             comment = c("Author and copyright holder of ria.test-specific extensions")),
       person(given = "Nicholas",
              family = "Williams",
              role = c("aut", "cph"),
@@ -23,15 +23,15 @@ Authors@R:
              role = c("aut", "cph"),
              comment = c(ORCID = "0000-0001-9056-2047")))
 Maintainer: Ang Yu <ang_yu@outlook.com>
-Description: Implements a Riesz regression test for whether natural mediation
-    effects differ from their randomized interventional analogues. The test
-    estimates TE - TER and uses it to falsify the composite null that the natural
-    indirect and direct effects equal their randomized interventional analogues,
-    even when the natural effects are not identified. The package extends the
-    'crumble' R package by Williams and Díaz (2024), retaining its
-    Riesz-learning machinery for natural, organic, randomized interventional,
-    and recanting-twin mediation estimands while adding the test developed in
-    Yu, Ge, and Elwert (2026).
+Description: Implements the empirical test introduced by Yu, Ge, and Elwert
+    (2026) for detecting when randomized interventional analogues should not be
+    interpreted as natural mediation effects. The test estimates TE - TER, the
+    difference between the total effect and its randomized interventional
+    analogue. Rejecting TE - TER = 0 falsifies the composite null that the natural
+    indirect and direct effects equal their randomized interventional analogues.
+    The procedure remains valid in settings where the natural effects themselves
+    are not identified, and |TE - TER| provides a lower bound on the total
+    divergence between the natural and randomized interventional decompositions.
 License: GPL (>= 3)
 Encoding: UTF-8
 Depends: 

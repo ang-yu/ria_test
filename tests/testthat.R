@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(crumble)
+library(ria.test)
 
-test_check("crumble")
+test_check("ria.test")

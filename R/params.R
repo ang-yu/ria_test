@@ -39,7 +39,7 @@ recanting_twin <- list(
 	)
 )
 
-ria_test <- list(
+ria.test_params <- list(
 	natural = list(
 		c(j = "data_1", k = "data_1", l = "data_1"),
 		c(j = "data_0", k = "data_0", l = "data_0")

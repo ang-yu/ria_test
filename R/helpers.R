@@ -3,7 +3,7 @@ alpha <- function(model, data) {
 }
 
 add_psuedo <- function(data, x) {
-	cbind("tmp_crumble_pseudo_y" = x, data)
+	cbind("tmp_ria_test_pseudo_y" = x, data)
 }
 
 make_folds <- function(data, V, id, strata) {

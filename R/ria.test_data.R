@@ -1,7 +1,7 @@
-crumble_data <- S7::new_class("crumble_data",
+ria.test_data <- S7::new_class("ria.test_data",
 	properties = list(
 		data = S7::new_property(S7::class_data.frame),
-		vars = S7::new_property(S7::new_class("crumble_vars")),
+		vars = S7::new_property(S7::new_class("ria.test_vars")),
 		weights = S7::new_property(S7::class_numeric),
 		d0 = S7::new_property(S7::class_function, default = NULL),
 		d1 = S7::new_property(S7::class_function, default = NULL),
@@ -43,7 +43,7 @@ crumble_data <- S7::new_class("crumble_data",
 training <- S7::new_generic("training", "x")
 validation <- S7::new_generic("validation", "x")
 
-S7::method(training, crumble_data) <- function(x, fold_obj, fold) {
+S7::method(training, ria.test_data) <- function(x, fold_obj, fold) {
 	list(
 		data = x@data[fold_obj[[fold]]$training_set, , drop = FALSE],
 		data_0 = x@data_0[fold_obj[[fold]]$training_set, , drop = FALSE],
@@ -53,7 +53,7 @@ S7::method(training, crumble_data) <- function(x, fold_obj, fold) {
 	)
 }
 
-S7::method(validation, crumble_data) <- function(x, fold_obj, fold) {
+S7::method(validation, ria.test_data) <- function(x, fold_obj, fold) {
 	list(
 		data = x@data[fold_obj[[fold]]$validation_set, , drop = FALSE],
 		data_0 = x@data_0[fold_obj[[fold]]$validation_set, , drop = FALSE],

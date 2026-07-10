@@ -43,7 +43,7 @@ theta <- function(train, valid, vars, params, learners, control) {
 
 			theta2 <- mlr3superlearner::mlr3superlearner(
 				data = add_psuedo(train$data[, na.omit(c(vars@A, vars@W, vars@Z))], b3_train),
-				target = "tmp_crumble_pseudo_y",
+				target = "tmp_ria_test_pseudo_y",
 				library = learners,
 				outcome_type = "continuous",
 				folds = control$mlr3superlearner_folds,
@@ -56,7 +56,7 @@ theta <- function(train, valid, vars, params, learners, control) {
 
 			theta1 <- mlr3superlearner::mlr3superlearner(
 				data = add_psuedo(train$data[, c(vars@A, vars@W)], b2_train),
-				target = "tmp_crumble_pseudo_y",
+				target = "tmp_ria_test_pseudo_y",
 				library = learners,
 				outcome_type = "continuous",
 				folds = control$mlr3superlearner_folds,
@@ -96,7 +96,7 @@ theta <- function(train, valid, vars, params, learners, control) {
 
 		theta3 <- mlr3superlearner::mlr3superlearner(
 			data = add_psuedo(train$data[, c(vars@A, vars@W, vars@M)], b4_train),
-			target = "tmp_crumble_pseudo_y",
+			target = "tmp_ria_test_pseudo_y",
 			library = learners,
 			outcome_type = "continuous",
 			folds = control$mlr3superlearner_folds,
@@ -109,7 +109,7 @@ theta <- function(train, valid, vars, params, learners, control) {
 
 		theta2 <- mlr3superlearner::mlr3superlearner(
 			data = add_psuedo(train$data[, c(vars@A, vars@W, vars@Z)], b3_train),
-			target = "tmp_crumble_pseudo_y",
+			target = "tmp_ria_test_pseudo_y",
 			library = learners,
 			outcome_type = "continuous",
 			folds = control$mlr3superlearner_folds,
@@ -122,7 +122,7 @@ theta <- function(train, valid, vars, params, learners, control) {
 
 		theta1 <- mlr3superlearner::mlr3superlearner(
 			data = add_psuedo(train$data[, c(vars@A, vars@W)], b2_train),
-			target = "tmp_crumble_pseudo_y",
+			target = "tmp_ria_test_pseudo_y",
 			library = learners,
 			outcome_type = "continuous",
 			folds = control$mlr3superlearner_folds,

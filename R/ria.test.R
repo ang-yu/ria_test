@@ -1,10 +1,8 @@
-#' Flexible and general mediation analysis
+#' Test natural mediation effects against randomized interventional analogues
 #'
-#' General estimator for common mediation causal effects, including recanting
-#' twins, natural effects, organic effects, and randomized interventional
-#' effects. Interventions are specified using modified treatment policies.
-#' Nuisance parameters are estimated using the 'super learner' algorithm and
-#' 'Riesz learning'. Supports binary, categorical, and continuous exposures.
+#' Estimate TE - TER and use it as a falsification test for the composite null
+#' that natural direct and indirect effects equal their randomized
+#' interventional analogues.
 #'
 #' @param data [\code{data.frame}]\cr
 #'  A \code{data.frame} in wide format containing all necessary variables
@@ -43,10 +41,10 @@
 #'  A vector of \code{mlr3superlearner} algorithms
 #'  for estimation of the outcome regressions. Default is \code{"glm"}, a main effects GLM.
 #' @param nn_module [\code{function}]\cr A function that returns a neural network module.
-#' @param control [\code{crumble_control}]\cr
-#'  Control parameters for the estimation procedure. Use \code{crumble_control()} to set these values.
+#' @param control [\code{ria.test.control}]\cr
+#'  Control parameters for the estimation procedure. Use \code{ria.test.control()} to set these values.
 #'
-#' @return A \code{crumble} object containing the following components:
+#' @return A \code{ria.test} object containing the following components:
 #' \item{estimates}{A list of parameter estimates.}
 #' \item{outcome_reg}{Predictions from the outcome regressions.}
 #' \item{alpha_n}{A list of density ratio estimates.}
@@ -60,7 +58,7 @@
 #' @export
 #'
 #' @example inst/examples/examples.R
-crumble <- function(data,
+ria.test <- function(data,
 										trt,
 										outcome,
 										mediators,
@@ -74,7 +72,7 @@ crumble <- function(data,
 										weights = rep(1, nrow(data)),
 										learners = "glm",
 										nn_module = sequential_module(),
-										control = crumble_control()) {
+										control = ria.test.control()) {
 
 	# Perform initial checks
 	assert_data_frame(data[, c(trt, outcome, mediators, moc, covar, obs, id)])
@@ -94,12 +92,12 @@ crumble <- function(data,
 									 O = organic,
 									 RT = recanting_twin,
 									 RI = randomized,
-									 Te = ria_test)
+									 Te = ria.test_params)
 
-	# Create crumble_data object
-	cd <- crumble_data(
+	# Create ria.test data object
+	cd <- ria.test_data(
 		data = data,
-		vars = crumble_vars(
+		vars = ria.test_vars(
 			A = trt,
 			Y = outcome,
 			M = mediators,
@@ -150,6 +148,6 @@ crumble <- function(data,
 		effect = match.arg(effect)
 	)
 
-	class(out) <- "crumble"
+	class(out) <- "ria.test"
 	out
 }

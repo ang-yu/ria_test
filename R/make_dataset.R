@@ -1,7 +1,7 @@
 make_dataset <- function(data, x, device) {
 	self <- NULL
 	dataset <- torch::dataset(
-		name = "tmp_crumble_dataset",
+		name = "tmp_ria_test_dataset",
 		initialize = function(data, x, device) {
 			for (df in names(data)) {
 				if (ncol(data[[df]]) > 0) {

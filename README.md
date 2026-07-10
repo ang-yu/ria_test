@@ -1,31 +1,31 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-> crumble (verb): break or fall apart into small fragments
-
-# crumble
+# ria.test
 
 <!-- badges: start -->
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![CRAN
-status](https://www.r-pkg.org/badges/version/crumble)](https://CRAN.R-project.org/package=crumble)
 [![License: GPL
 v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 <!-- badges: end -->
 
-*crumble* implements a modern, unified estimation strategy (Liu et al.
-2024) for common mediation estimands: natural effects (Pearl 2022),
-organic effects (Lok 2015), interventional effects (Vansteelandt and
-Daniel 2017), recanting twins (Vo et al. 2024), in causal inference in
-combination with modified treatment policies. It makes use of recent
-advancements in “Riesz-learning” to estimate a set of required nuisance
-parameters using deep learning. The result is a software package that is
-capable of estimating mediation effects with binary, categorical,
-continuous, or multivariate exposures with high-dimensional mediators
-and mediator-outcome confounders using machine learning.
+*ria.test* implements the empirical test introduced by Yu, Ge, and
+Elwert (2026) for detecting when randomized interventional analogues
+should not be interpreted as natural mediation effects. The test
+estimates `TE - TER`, the difference between the total effect and its
+randomized interventional analogue. Rejecting `TE - TER = 0` falsifies
+the composite null that the natural indirect and direct effects equal
+their randomized interventional analogues. The procedure remains valid in
+settings where the natural effects themselves are not identified, and
+`|TE - TER|` provides a lower bound on the total divergence between the
+natural and randomized interventional decompositions.
+
+The implementation uses Riesz-regression machinery adapted from the
+upstream mediation-estimation codebase for the total-effect contrast and
+associated uncertainty estimates.
 
 This work was supported by the National Institute on Drug Abuse
 \[R00DA042127\].
@@ -65,7 +65,7 @@ remotes::install_github("ang-yu/ria_test")
 ### Example(s)
 
 ``` r
-library(crumble)
+library(ria.test)
 library(mlr3extralearners)
 
 data(weight_behavior, package = "mma")
@@ -78,7 +78,7 @@ set.seed(2345)
 ##### Recanting twins
 
 ``` r
-crumble(
+ria.test(
     data = weight_behavior,
     trt = "sports", 
     outcome = "bmi",
@@ -90,14 +90,14 @@ crumble(
     effect = "RT",
     learners = c("mean", "glm", "earth", "ranger"), 
     nn_module = sequential_module(),
-    control = crumble_control(crossfit_folds = 1L, epochs = 20L)
+    control = ria.test.control(crossfit_folds = 1L, epochs = 20L)
 )
 #> ✔ Permuting Z-prime variables... 1/1 tasks [2.5s]
 #> ✔ Fitting outcome regressions... 1/1 folds [25.6s]             
 #> ✔ Computing alpha n density ratios... 1/1 folds [39.7s]        
 #> ✔ Computing alpha r density ratios... 1/1 folds [41.6s]        
 #> 
-#> ══ Results `crumble()` ═════════════════════════════════════════
+#> ══ Results `ria.test()` ═════════════════════════════════════════
 #> 
 #> ── E[Y(d1) - Y(d0)] 
 #>       Estimate: 1.0537
@@ -133,7 +133,7 @@ crumble(
 ##### Natural effects
 
 ``` r
-crumble(
+ria.test(
     data = weight_behavior,
     trt = "sports", 
     outcome = "bmi",
@@ -144,12 +144,12 @@ crumble(
     effect = "N",
     learners = c("mean", "glm", "earth", "ranger"), 
     nn_module = sequential_module(),
-    control = crumble_control(crossfit_folds = 1L, epochs = 20L)
+    control = ria.test.control(crossfit_folds = 1L, epochs = 20L)
 )
 #> ✔ Fitting outcome regressions... 1/1 folds [10.6s]             
 #> ✔ Computing alpha n density ratios... 1/1 folds [53.1s]        
 #> 
-#> ══ Results `crumble()` ═════════════════════════════════════════
+#> ══ Results `ria.test()` ═════════════════════════════════════════
 #> 
 #> ── E[Y(d1) - Y(d0)] 
 #>       Estimate: 1.0289
@@ -170,7 +170,7 @@ crumble(
 ##### Organic effects
 
 ``` r
-crumble(
+ria.test(
     data = weight_behavior,
     trt = "sports", 
     outcome = "bmi",
@@ -181,12 +181,12 @@ crumble(
     effect = "O",
     learners = c("mean", "glm", "earth", "ranger"), 
     nn_module = sequential_module(),
-    control = crumble_control(crossfit_folds = 1L, epochs = 20L)
+    control = ria.test.control(crossfit_folds = 1L, epochs = 20L)
 )
 #> ✔ Fitting outcome regressions... 1/1 folds [10.7s]             
 #> ✔ Computing alpha n density ratios... 1/1 folds [48.2s]        
 #> 
-#> ══ Results `crumble()` ═════════════════════════════════════════
+#> ══ Results `ria.test()` ═════════════════════════════════════════
 #> 
 #> ── Organic Direct Effect 
 #>       Estimate: 0.011
@@ -202,7 +202,7 @@ crumble(
 ##### Randomized interventional effects
 
 ``` r
-crumble(
+ria.test(
     data = weight_behavior,
     trt = "sports", 
     outcome = "bmi",
@@ -214,13 +214,13 @@ crumble(
     effect = "RI",
     learners = c("mean", "glm", "earth", "ranger"), 
     nn_module = sequential_module(),
-    control = crumble_control(crossfit_folds = 1L, epochs = 20L)
+    control = ria.test.control(crossfit_folds = 1L, epochs = 20L)
 )
 #> ✔ Permuting Z-prime variables... 1/1 tasks [2s]
 #> ✔ Fitting outcome regressions... 1/1 folds [14.2s]             
 #> ✔ Computing alpha r density ratios... 1/1 folds [1m 23.2s]     
 #> 
-#> ══ Results `crumble()` ═════════════════════════════════════════
+#> ══ Results `ria.test()` ═════════════════════════════════════════
 #> 
 #> ── Randomized Direct Effect 
 #>       Estimate: 0.0162
@@ -236,7 +236,7 @@ crumble(
 ##### Testing the differences between the natural effects and the interventional effects
 
 ``` r
-crumble(
+ria.test(
     data = weight_behavior,
     trt = "sports", 
     outcome = "bmi",
@@ -248,14 +248,14 @@ crumble(
     effect = "Te",
     learners = c("mean", "glm", "earth", "ranger"), 
     nn_module = sequential_module(),
-    control = crumble_control(crossfit_folds = 1L, epochs = 20L)
+    control = ria.test.control(crossfit_folds = 1L, epochs = 20L)
 )
 #> ✔ Permuting Z-prime variables... 1/1 tasks [4s]
 #> ✔ Fitting outcome regressions... 1/1 folds [41.1s]
 #> ✔ Computing alpha n density ratios... 1/1 folds [59s]
 #> ✔ Computing alpha r density ratios... 1/1 folds [56.7s]
 #> 
-#> ══ Results `crumble()` ═══════════════════════════════════════════════════════════════════════
+#> ══ Results `ria.test()` ═══════════════════════════════════════════════════════════════════════
 #> 
 #> ── Total Effect 
 #>       Estimate: 1.0427

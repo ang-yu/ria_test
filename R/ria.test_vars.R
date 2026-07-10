@@ -3,7 +3,7 @@
 #' @importFrom stats na.omit weighted.mean var qnorm dist model.matrix predict setNames
 NULL
 
-crumble_vars <- S7::new_class("crumble_vars",
+ria.test_vars <- S7::new_class("ria.test_vars",
   properties = list(
     A = S7::class_character,
     Y = S7::class_character,
