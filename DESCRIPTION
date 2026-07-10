@@ -1,7 +1,7 @@
 Package: ria.test
 Type: Package
 Title: ria.test
-Version: 0.1.3
+Version: 0.2.0
 Authors@R: 
     c(person(given = "Ang",
              family = "Yu",
@@ -25,18 +25,18 @@ Authors@R:
 Maintainer: Ang Yu <ang_yu@outlook.com>
 Description: Implements the empirical test introduced by Yu, Ge, and Elwert
     (2026) for detecting when randomized interventional analogues should not be
-    interpreted as natural mediation effects. The test estimates TE - TER, the
+    interpreted as natural mediation effects. The package estimates natural
+    effects, their randomized interventional analogues, and TE - TE^R, the
     difference between the total effect and its randomized interventional
-    analogue. Rejecting TE - TER = 0 falsifies the composite null that the natural
+    analogue. Rejecting TE - TE^R = 0 falsifies the composite null that the natural
     indirect and direct effects equal their randomized interventional analogues.
     The procedure remains valid in settings where the natural effects themselves
-    are not identified, and |TE - TER| provides a lower bound on the total
+    are not identified, and |TE - TE^R| provides a lower bound on the total
     divergence between the natural and randomized interventional decompositions.
 License: GPL (>= 3)
 Encoding: UTF-8
 Depends: 
     R (>= 4.2.0)
-RoxygenNote: 7.3.2
 URL: https://github.com/ang-yu/ria_test
 BugReports: https://github.com/ang-yu/ria_test/issues
 Imports: 
@@ -51,12 +51,10 @@ Imports:
     data.table,
     coro,
     generics,
-    lmtp,
     mlr3superlearner,
     progressr,
     ife (>= 0.2.1)
 Suggests: 
-    testthat (>= 3.0.0),
-    truncnorm, 
-    mma
+    testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0

@@ -1,4 +1,4 @@
-estimate_theta <- function(cd, thetas, folds, params, learners_regressions, control) {
+estimate_theta <- function(cd, folds, params, learners_regressions, control) {
 	thetas <- vector("list", control$crossfit_folds)
 	i <- 1
 	cli::cli_progress_step("Fitting outcome regressions... {i}/{control$crossfit_folds} folds")

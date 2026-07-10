@@ -1,22 +1,29 @@
 \donttest{
-if (require("mma") && torch::torch_is_installed()) {
-	library(mma)
-	data(weight_behavior)
-
-	weight_behavior <- na.omit(weight_behavior)
+if (torch::torch_is_installed()) {
+	set.seed(123)
+	n <- 200
+	w <- rnorm(n)
+	a <- rbinom(n, 1, plogis(w))
+	l <- rnorm(n, a + w)
+	m <- rnorm(n, a + l + w)
+	y <- rnorm(n, a + l + m + w)
+	dat <- data.frame(w, a, l, m, y)
 
 	res <- ria.test(
-		data = weight_behavior,
-		trt = "sports",
-		outcome = "bmi",
-		covar = c("age", "sex", "tvhours"),
-		mediators = c("exercises", "overweigh"),
-		moc = "snack",
-		d0 = \(data, trt) factor(rep(1, nrow(data)), levels = c("1", "2")),
-		d1 = \(data, trt) factor(rep(2, nrow(data)), levels = c("1", "2")),
-		learners = c("mean", "glm"),
-		nn_module = sequential_module(),
-		control = ria.test.control(crossfit_folds = 1L, zprime_folds = 5L, epochs = 10L)
+		data = dat,
+		trt = "a",
+		outcome = "y",
+		mediators = "m",
+		moc = "l",
+		covar = "w",
+		d0 = \(data, trt) rep(0, nrow(data)),
+		d1 = \(data, trt) rep(1, nrow(data)),
+		control = ria.test.control(
+			crossfit_folds = 1L,
+			mlr3superlearner_folds = 2L,
+			zprime_folds = 2L,
+			epochs = 2L
+		)
 	)
 
 	print(res)

@@ -1,49 +1,35 @@
-calc_estimates_natural <- function(eif_ns, weights) {
-	list(
-		direct = eif_ns[["100"]] - eif_ns[["000"]],		  # A -> Y
-		indirect = eif_ns[["111"]] - eif_ns[["100"]],		# A -> M -> Y
-		ate = eif_ns[["111"]] - eif_ns[["000"]]
+calculate_estimates <- function(estimand, eif_natural, eif_ria) {
+	switch(
+		estimand,
+		natural = calculate_natural_effects(eif_natural),
+		ria = calculate_ria_effects(eif_ria),
+		test = calculate_test_effects(eif_natural, eif_ria)
 	)
 }
 
-calc_estimates_organic <- function(eif_ns, weights) {
+calculate_natural_effects <- function(eif) {
 	list(
-		ode = eif_ns[["101"]] - eif_ns[["000"]],
-		oie = eif_ns[["111"]] - eif_ns[["101"]]
+		TE = eif[["111"]] - eif[["000"]],
+		NIE = eif[["111"]] - eif[["100"]],
+		NDE = eif[["100"]] - eif[["000"]]
 	)
 }
 
-calc_estimates_ri <- function(eif_rs, weights) {
+calculate_ria_effects <- function(eif) {
 	list(
-		ride = eif_rs[["1100"]] - eif_rs[["0000"]],
-		riie = eif_rs[["1111"]] - eif_rs[["1100"]]
+		"TE^R" = eif[["1111"]] - eif[["0000"]],
+		"NIE^R" = eif[["1111"]] - eif[["1100"]],
+		"NDE^R" = eif[["1100"]] - eif[["0000"]]
 	)
 }
 
-calc_estimates_rt <- function(eif_ns, eif_rs, weights) {
-	ans <- list(
-		p1 = eif_ns[["111"]] - eif_ns[["011"]], 		# A -> Y
-		p2 = eif_rs[["0111"]] - eif_rs[["0011"]],   # A -> Z -> Y
-		p3 = eif_rs[["0011"]] - eif_rs[["0010"]],		# A -> Z -> M -> Y
-		p4 = eif_ns[["010"]] - eif_ns[["000"]],		  # A -> M -> Y
-		intermediate_confounding =		              # Intermediate confounding
-			eif_ns[["011"]] - eif_rs[["0111"]] +
-			eif_rs[["0011"]] - eif_rs[["0011"]] +
-			eif_rs[["0010"]] - eif_ns[["010"]],
-		ate = eif_ns[["111"]] - eif_ns[["000"]]
-	)
+calculate_test_effects <- function(eif_natural, eif_ria) {
+	te <- eif_natural[["111"]] - eif_natural[["000"]]
+	te_r <- eif_ria[["1111"]] - eif_ria[["0000"]]
 
-	ans$indirect <- ans$p3 + ans$p4
-	ans$direct <- ans$p1 + ans$p2
-	ans
-}
-
-calc_estimates_te <- function(eif_ns, eif_rs, weights) {
 	list(
-		ate = eif_ns[["111"]] - eif_ns[["000"]],
-		ride = eif_rs[["1100"]] - eif_rs[["0000"]],
-		riie = eif_rs[["1111"]] - eif_rs[["1100"]],
-		rate = eif_rs[["1111"]] - eif_rs[["0000"]],
-		ate_rate_diff = eif_ns[["111"]] - eif_ns[["000"]] - (eif_rs[["1111"]] - eif_rs[["0000"]])
+		TE = te,
+		"TE^R" = te_r,
+		"TE - TE^R" = te - te_r
 	)
 }

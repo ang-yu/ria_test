@@ -1,11 +1,9 @@
-add_zp <- function(cd, moc, control) {
-	if (!is.null(moc)) {
-		zp <- set_zp(cd, control$zprime_folds)
-		cd@data_0zp <- cd@data_0
-		cd@data_1zp <- cd@data_1
-		cd@data_0zp[, cd@vars@Z] <- zp
-		cd@data_1zp[, cd@vars@Z] <- zp
-	}
+add_zp <- function(cd, control) {
+	zp <- set_zp(cd, control$zprime_folds)
+	cd@data_0zp <- cd@data_0
+	cd@data_1zp <- cd@data_1
+	cd@data_0zp[, cd@vars@Z] <- zp
+	cd@data_1zp[, cd@vars@Z] <- zp
 	cd
 }
 

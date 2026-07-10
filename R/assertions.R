@@ -25,20 +25,16 @@ check_binary_0_1 <- function(data, x) {
 
 assert_binary_0_1 <- checkmate::makeAssertionFunction(check_binary_0_1)
 
-check_effect_type <- function(moc, effect) {
-	if (is.null(moc) & effect == "RT") {
-		return("Must provide mediator-outcome confounders for recanting twins")
+check_estimand_compatibility <- function(moc, estimand) {
+	if (is.null(moc) && estimand %in% c("ria", "test")) {
+		return("Must provide mediator-outcome confounders for RIA estimation")
 	}
 
-	if (is.null(moc) & effect %in% c("RI", "Te")) {
-		return("Must provide mediator-outcome confounders for interventional effects")
-	}
-
-	if (!is.null(moc) & effect %in% c("N", "O", "D")) {
-		return("Must not provide mediator-outcome confounders for natural, organic, or decision theoretic effects")
+	if (!is.null(moc) && estimand == "natural") {
+		return("Natural effects are not identified in the presence of treatment-induced mediator-outcome confounding")
 	}
 
 	TRUE
 }
 
-assert_effect_type <- checkmate::makeAssertionFunction(check_effect_type)
+assert_estimand_compatibility <- checkmate::makeAssertionFunction(check_estimand_compatibility)

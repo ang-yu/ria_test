@@ -2,7 +2,7 @@
 % Please edit documentation in R/ria.test.R
 \name{ria.test}
 \alias{ria.test}
-\title{Test natural mediation effects against randomized interventional analogues}
+\title{Estimate natural effects, randomized interventional analogues, or their test}
 \usage{
 ria.test(
   data,
@@ -15,7 +15,7 @@ ria.test(
   id = NULL,
   d0 = NULL,
   d1 = NULL,
-  effect = c("RT", "N", "RI", "O", "Te"),
+  estimand = c("test", "natural", "ria"),
   weights = rep(1, nrow(data)),
   learners = "glm",
   nn_module = sequential_module(),
@@ -58,12 +58,12 @@ See examples for how to specify shift functions for continuous, binary, and cate
 A two argument function that specifies how treatment variables should be shifted.
 See examples for how to specify shift functions for continuous, binary, and categorical exposures.}
 
-\item{effect}{[\code{character(1)}]\cr
-The type of effect to estimate. Options are \code{"RT"} for recanting twins,
-\code{"N"} for natural effects, \code{"RI"} for randomized interventional effects,
-\code{"O"} for organic effects, \code{"Te"} for the test for interventional effects.
-If \code{"RT"}, \code{"RI"}, or \code{"Te"} is selected, \code{moc} must be provided.
-If \code{"N"} or \code{"O"} is selected, \code{moc} must be \code{NULL}.}
+\item{estimand}{[\code{character(1)}]\cr
+The estimands to return. \code{"test"} returns \eqn{TE}, \eqn{TE^R}, and
+\eqn{TE - TE^R}; \code{"natural"} returns \eqn{TE}, \eqn{NIE}, and \eqn{NDE};
+and \code{"ria"} returns \eqn{TE^R}, \eqn{NIE^R}, and \eqn{NDE^R}.
+\code{moc} is required for \code{"test"} and \code{"ria"}, and must be
+\code{NULL} for \code{"natural"}.}
 
 \item{weights}{[\code{numeric}]\cr
 A optional vector of survey weights.}
@@ -78,40 +78,42 @@ for estimation of the outcome regressions. Default is \code{"glm"}, a main effec
 Control parameters for the estimation procedure. Use \code{ria.test.control()} to set these values.}
 }
 \value{
-A \code{ria.test} object containing the following components:
-\item{estimates}{A list of parameter estimates.}
-\item{outcome_reg}{Predictions from the outcome regressions.}
-\item{alpha_n}{A list of density ratio estimates.}
-\item{alpha_r}{A list of density ratio estimates.}
-\item{fits}{A list of the fitted values from the outcome regressions.}
-\item{call}{The matched call.}
-\item{effect}{The estimated effect type.}
+A \code{ria.test} object containing the requested effect estimates,
+  the matched call, and the estimand set.
 }
 \description{
-Estimate TE - TER and use it as a falsification test for the composite null
-that natural direct and indirect effects equal their randomized
-interventional analogues.
+Estimate the natural mediation decomposition, its randomized interventional
+analogue (RIA), or the difference between the total effect and its RIA.
+The latter, \eqn{TE - TE^R}, is the test statistic for the composite null
+\eqn{NIE = NIE^R} and \eqn{NDE = NDE^R}.
 }
 \examples{
 \donttest{
-if (require("mma") && torch::torch_is_installed()) {
-	library(mma)
-	data(weight_behavior)
-
-	weight_behavior <- na.omit(weight_behavior)
+if (torch::torch_is_installed()) {
+	set.seed(123)
+	n <- 200
+	w <- rnorm(n)
+	a <- rbinom(n, 1, plogis(w))
+	l <- rnorm(n, a + w)
+	m <- rnorm(n, a + l + w)
+	y <- rnorm(n, a + l + m + w)
+	dat <- data.frame(w, a, l, m, y)
 
 	res <- ria.test(
-		data = weight_behavior,
-		trt = "sports",
-		outcome = "bmi",
-		covar = c("age", "sex", "tvhours"),
-		mediators = c("exercises", "overweigh"),
-		moc = "snack",
-		d0 = \(data, trt) factor(rep(1, nrow(data)), levels = c("1", "2")),
-		d1 = \(data, trt) factor(rep(2, nrow(data)), levels = c("1", "2")),
-		learners = c("mean", "glm"),
-		nn_module = sequential_module(),
-		control = ria.test.control(crossfit_folds = 1L, zprime_folds = 5L, epochs = 10L)
+		data = dat,
+		trt = "a",
+		outcome = "y",
+		mediators = "m",
+		moc = "l",
+		covar = "w",
+		d0 = \(data, trt) rep(0, nrow(data)),
+		d1 = \(data, trt) rep(1, nrow(data)),
+		control = ria.test.control(
+			crossfit_folds = 1L,
+			mlr3superlearner_folds = 2L,
+			zprime_folds = 2L,
+			epochs = 2L
+		)
 	)
 
 	print(res)

@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: end -->
 
-*ria.test* implements the empirical test introduced by Yu, Ge, and Elwert (2026) for detecting when randomized interventional analogues should not be interpreted as natural mediation effects. The test estimates `TE - TER`, the difference between the total effect and its randomized interventional analogue. Rejecting `TE - TER = 0` falsifies the composite null that the natural indirect and direct effects equal their randomized interventional analogues. The procedure remains valid in settings where the natural effects themselves are not identified, and `|TE - TER|` provides a lower bound on the total divergence between the natural and randomized interventional decompositions.
+*ria.test* implements the empirical test introduced by Yu, Ge, and Elwert (2026) for detecting when randomized interventional analogues should not be interpreted as natural mediation effects. The test estimates `TE - TE^R`, the difference between the total effect and its randomized interventional analogue. Rejecting `TE - TE^R = 0` falsifies the composite null that the natural indirect and direct effects equal their randomized interventional analogues. The procedure remains valid in settings where the natural effects themselves are not identified, and `|TE - TE^R|` provides a lower bound on the total divergence between the natural and randomized interventional decompositions.
 
 The implementation uses Riesz-regression machinery adapted from the upstream mediation-estimation codebase for the total-effect contrast and associated uncertainty estimates.
 
@@ -31,213 +31,45 @@ The implementation uses Riesz-regression machinery adapted from the upstream med
 remotes::install_github("ang-yu/ria_test")
 ```
 
-### Example(s)
+### Usage
 
 ```{r eval=FALSE}
 library(ria.test)
-library(mlr3extralearners)
 
-data(weight_behavior, package = "mma")
+set.seed(123)
+n <- 500
+w <- rnorm(n)
+a <- rbinom(n, 1, plogis(w))
+l <- rnorm(n, a + w)
+m <- rnorm(n, a + l + w)
+y <- rnorm(n, a + l + m + w)
+dat <- data.frame(w, a, l, m, y)
 
-weight_behavior <- na.omit(weight_behavior)
-
-set.seed(2345)
-```
-
-##### Recanting twins
-
-```{r eval=FALSE}
-ria.test(
-	data = weight_behavior,
-	trt = "sports", 
-	outcome = "bmi",
-	covar = c("age", "sex", "tvhours"),
-	mediators = c("exercises", "overweigh"),
-	moc = "snack",
-	d0 = \(data, trt) factor(rep(1, nrow(data)), levels = c("1", "2")), 
-	d1 = \(data, trt) factor(rep(2, nrow(data)), levels = c("1", "2")), 
-	effect = "RT",
-	learners = c("mean", "glm", "earth", "ranger"), 
-	nn_module = sequential_module(),
-	control = ria.test.control(crossfit_folds = 1L, epochs = 20L)
+common <- list(
+  data = dat,
+  trt = "a",
+  outcome = "y",
+  mediators = "m",
+  covar = "w",
+  d0 = \(data, trt) rep(0, nrow(data)),
+  d1 = \(data, trt) rep(1, nrow(data))
 )
-#> ✔ Permuting Z-prime variables... 1/1 tasks [2.5s]
-#> ✔ Fitting outcome regressions... 1/1 folds [25.6s]             
-#> ✔ Computing alpha n density ratios... 1/1 folds [39.7s]        
-#> ✔ Computing alpha r density ratios... 1/1 folds [41.6s]        
-#> 
-#> ══ Results `ria.test()` ═════════════════════════════════════════
-#> 
-#> ── E[Y(d1) - Y(d0)] 
-#>       Estimate: 1.0537
-#>     Std. error: 0.3009
-#>         95% CI: (0.4639, 1.6435)
-#> 
-#> ── Path: A -> Y 
-#>       Estimate: 0.0366
-#>     Std. error: 0.1842
-#>         95% CI: (-0.3245, 0.3976)
-#> 
-#> ── Path: A -> Z -> Y 
-#>       Estimate: -0.0202
-#>     Std. error: 0.0238
-#>         95% CI: (-0.0668, 0.0264)
-#> 
-#> ── Path: A -> Z -> M -> Y 
-#>       Estimate: -6e-04
-#>     Std. error: 0.0099
-#>         95% CI: (-0.02, 0.0189)
-#> 
-#> ── Path: A -> M -> Y 
-#>       Estimate: 1.0506
-#>     Std. error: 0.2162
-#>         95% CI: (0.627, 1.4743)
-#> 
-#> ── Intermediate Confounding 
-#>       Estimate: -0.0127
-#>     Std. error: 0.0261
-#>         95% CI: (-0.0638, 0.0384)
-```
 
-##### Natural effects
+# TE, TE^R, and TE - TE^R (the default)
+test_fit <- do.call(ria.test, c(common, list(moc = "l")))
 
-```{r eval=FALSE}
-ria.test(
-	data = weight_behavior,
-	trt = "sports", 
-	outcome = "bmi",
-	covar = c("age", "sex", "tvhours"),
-	mediators = c("exercises", "overweigh"),
-	d0 = \(data, trt) factor(rep(1, nrow(data)), levels = c("1", "2")), 
-	d1 = \(data, trt) factor(rep(2, nrow(data)), levels = c("1", "2")), 
-	effect = "N",
-	learners = c("mean", "glm", "earth", "ranger"), 
-	nn_module = sequential_module(),
-	control = ria.test.control(crossfit_folds = 1L, epochs = 20L)
-)
-#> ✔ Fitting outcome regressions... 1/1 folds [10.6s]             
-#> ✔ Computing alpha n density ratios... 1/1 folds [53.1s]        
-#> 
-#> ══ Results `ria.test()` ═════════════════════════════════════════
-#> 
-#> ── E[Y(d1) - Y(d0)] 
-#>       Estimate: 1.0289
-#>     Std. error: 0.28
-#>         95% CI: (0.48, 1.5777)
-#> 
-#> ── Natural Direct Effect 
-#>       Estimate: 0.0165
-#>     Std. error: 0.1717
-#>         95% CI: (-0.3201, 0.3531)
-#> 
-#> ── Natural Indirect Effect 
-#>       Estimate: 1.0124
-#>     Std. error: 0.2178
-#>         95% CI: (0.5856, 1.4393)
-```
+# TE^R, NIE^R, and NDE^R
+ria_fit <- do.call(ria.test, c(
+  common,
+  list(moc = "l", estimand = "ria")
+))
 
-##### Organic effects
+# TE, NIE, and NDE; valid only without treatment-induced
+# mediator-outcome confounding
+natural_fit <- do.call(ria.test, c(
+  common,
+  list(estimand = "natural")
+))
 
-```{r eval=FALSE}
-ria.test(
-	data = weight_behavior,
-	trt = "sports", 
-	outcome = "bmi",
-	covar = c("age", "sex", "tvhours"),
-	mediators = c("exercises", "overweigh"),
-	d0 = \(data, trt) factor(rep(1, nrow(data)), levels = c("1", "2")), 
-	d1 = \(data, trt) factor(rep(2, nrow(data)), levels = c("1", "2")), 
-	effect = "O",
-	learners = c("mean", "glm", "earth", "ranger"), 
-	nn_module = sequential_module(),
-	control = ria.test.control(crossfit_folds = 1L, epochs = 20L)
-)
-#> ✔ Fitting outcome regressions... 1/1 folds [10.7s]             
-#> ✔ Computing alpha n density ratios... 1/1 folds [48.2s]        
-#> 
-#> ══ Results `ria.test()` ═════════════════════════════════════════
-#> 
-#> ── Organic Direct Effect 
-#>       Estimate: 0.011
-#>     Std. error: 0.1772
-#>         95% CI: (-0.3364, 0.3584)
-#> 
-#> ── Organic Indirect Effect 
-#>       Estimate: 1.0278
-#>     Std. error: 0.2231
-#>         95% CI: (0.5904, 1.4651)#> 
-```
-
-##### Randomized interventional effects
-
-```{r eval=FALSE}
-ria.test(
-	data = weight_behavior,
-	trt = "sports", 
-	outcome = "bmi",
-	covar = c("age", "sex", "tvhours"),
-	mediators = c("exercises", "overweigh"),
-	moc = "snack",
-	d0 = \(data, trt) factor(rep(1, nrow(data)), levels = c("1", "2")), 
-	d1 = \(data, trt) factor(rep(2, nrow(data)), levels = c("1", "2")), 
-	effect = "RI",
-	learners = c("mean", "glm", "earth", "ranger"), 
-	nn_module = sequential_module(),
-	control = ria.test.control(crossfit_folds = 1L, epochs = 20L)
-)
-#> ✔ Permuting Z-prime variables... 1/1 tasks [2s]
-#> ✔ Fitting outcome regressions... 1/1 folds [14.2s]             
-#> ✔ Computing alpha r density ratios... 1/1 folds [1m 23.2s]     
-#> 
-#> ══ Results `ria.test()` ═════════════════════════════════════════
-#> 
-#> ── Randomized Direct Effect 
-#>       Estimate: 0.0162
-#>     Std. error: 0.1774
-#>         95% CI: (-0.3315, 0.364)
-#> 
-#> ── Randomized Indirect Effect 
-#>       Estimate: 1.0304
-#>     Std. error: 0.2296
-#>         95% CI: (0.5805, 0.4662)
-```
-
-##### Testing the differences between the natural effects and the interventional effects
-
-```{r eval=FALSE}
-ria.test(
-	data = weight_behavior,
-	trt = "sports", 
-	outcome = "bmi",
-	covar = c("age", "sex", "tvhours"),
-	mediators = c("exercises", "overweigh"),
-	moc = "snack",
-	d0 = \(data, trt) factor(rep(1, nrow(data)), levels = c("1", "2")), 
-	d1 = \(data, trt) factor(rep(2, nrow(data)), levels = c("1", "2")), 
-	effect = "Te",
-	learners = c("mean", "glm", "earth", "ranger"), 
-	nn_module = sequential_module(),
-	control = ria.test.control(crossfit_folds = 1L, epochs = 20L)
-)
-#> ✔ Permuting Z-prime variables... 1/1 tasks [4s]
-#> ✔ Fitting outcome regressions... 1/1 folds [41.1s]
-#> ✔ Computing alpha n density ratios... 1/1 folds [59s]
-#> ✔ Computing alpha r density ratios... 1/1 folds [56.7s]
-#> 
-#> ══ Results `ria.test()` ═══════════════════════════════════════════════════════════════════════
-#> 
-#> ── Total Effect 
-#>       Estimate: 1.0427
-#>     Std. error: 0.2985
-#>         95% CI: (0.4576, 1.6278)
-#> 
-#> ── Randomized Total Effect 
-#>       Estimate: 1.0412
-#>     Std. error: 0.2944
-#>         95% CI: (0.4643, 1.6182)
-#> 
-#> ── Total Effect - Randomized Total Effect 
-#>       Estimate: 0.0014
-#>     Std. error: 0.0261
-#>         95% CI: (-0.0497, 0.0525)
+tidy(test_fit)
 ```

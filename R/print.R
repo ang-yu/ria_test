@@ -7,24 +7,19 @@ print.ria.test <- function(x, ...) {
 	cli_rule(left = "Results {.fn ria.test}")
 	cli_end(d)
 	iwalk(x$estimates, print_estimate)
+	invisible(x)
 }
 
 print_estimate <- function(x, name) {
-	title <- switch(name,
-									"ate" = "Average Treatment Effect",
-									"direct" = "Direct Effect",
-									"indirect" = "Indirect Effect",
-									"p1" = "Path: A -> Y",
-									"p2" = "Path: A -> Z -> Y",
-									"p3" = "Path: A -> Z -> M -> Y",
-									"p4" = "Path: A -> M -> Y",
-									"intermediate_confounding" = "Intermediate Confounding",
-									"ode" = "Organic Direct Effect",
-									"oie" = "Organic Indirect Effect",
-									"ride" = "Randomized Direct Effect",
-									"riie" = "Randomized Indirect Effect",
-									"rate" = "Randomized Average Effect",
-									"ate_rate_diff" = "ATE-ATER")
+	title <- c(
+		TE = "Total Effect (TE)",
+		NIE = "Natural Indirect Effect (NIE)",
+		NDE = "Natural Direct Effect (NDE)",
+		"TE^R" = "Randomized Interventional Total Effect (TE^R)",
+		"NIE^R" = "Randomized Interventional Indirect Effect (NIE^R)",
+		"NDE^R" = "Randomized Interventional Direct Effect (NDE^R)",
+		"TE - TE^R" = "Falsification Contrast (TE - TE^R)"
+	)[[name]]
 	cli_h3("{.emph {title}}")
 
 	est <- round(x@x, digits = 6)
@@ -34,4 +29,8 @@ print_estimate <- function(x, name) {
 	cat(sprintf("Estimate: %.6f\n", est))
 	cat(sprintf("Std. Error: %.6f\n", se))
 	cat(sprintf("95%% CI: [%.6f, %.6f]\n", ci[1], ci[2]))
+	if (identical(name, "TE - TE^R")) {
+		p_value <- 2 * stats::pnorm(-abs(x@x / x@std_error))
+		cat(sprintf("P-value: %s\n", format.pval(p_value, digits = 4)))
+	}
 }

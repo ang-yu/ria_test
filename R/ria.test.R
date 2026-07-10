@@ -1,8 +1,9 @@
-#' Test natural mediation effects against randomized interventional analogues
+#' Estimate natural effects, randomized interventional analogues, or their test
 #'
-#' Estimate TE - TER and use it as a falsification test for the composite null
-#' that natural direct and indirect effects equal their randomized
-#' interventional analogues.
+#' Estimate the natural mediation decomposition, its randomized interventional
+#' analogue (RIA), or the difference between the total effect and its RIA.
+#' The latter, \eqn{TE - TE^R}, is the test statistic for the composite null
+#' \eqn{NIE = NIE^R} and \eqn{NDE = NDE^R}.
 #'
 #' @param data [\code{data.frame}]\cr
 #'  A \code{data.frame} in wide format containing all necessary variables
@@ -29,12 +30,12 @@
 #' @param d1 [\code{closure}]\cr
 #'  A two argument function that specifies how treatment variables should be shifted.
 #'  See examples for how to specify shift functions for continuous, binary, and categorical exposures.
-#' @param effect [\code{character(1)}]\cr
-#'  The type of effect to estimate. Options are \code{"RT"} for recanting twins,
-#'  \code{"N"} for natural effects, \code{"RI"} for randomized interventional effects,
-#'  \code{"O"} for organic effects, \code{"Te"} for the test for interventional effects.
-#'  If \code{"RT"}, \code{"RI"}, or \code{"Te"} is selected, \code{moc} must be provided.
-#'  If \code{"N"} or \code{"O"} is selected, \code{moc} must be \code{NULL}.
+#' @param estimand [\code{character(1)}]\cr
+#'  The estimands to return. \code{"test"} returns \eqn{TE}, \eqn{TE^R}, and
+#'  \eqn{TE - TE^R}; \code{"natural"} returns \eqn{TE}, \eqn{NIE}, and \eqn{NDE};
+#'  and \code{"ria"} returns \eqn{TE^R}, \eqn{NIE^R}, and \eqn{NDE^R}.
+#'  \code{moc} is required for \code{"test"} and \code{"ria"}, and must be
+#'  \code{NULL} for \code{"natural"}.
 #' @param weights [\code{numeric}]\cr
 #'  A optional vector of survey weights.
 #' @param learners [\code{character}]\cr
@@ -44,14 +45,8 @@
 #' @param control [\code{ria.test.control}]\cr
 #'  Control parameters for the estimation procedure. Use \code{ria.test.control()} to set these values.
 #'
-#' @return A \code{ria.test} object containing the following components:
-#' \item{estimates}{A list of parameter estimates.}
-#' \item{outcome_reg}{Predictions from the outcome regressions.}
-#' \item{alpha_n}{A list of density ratio estimates.}
-#' \item{alpha_r}{A list of density ratio estimates.}
-#' \item{fits}{A list of the fitted values from the outcome regressions.}
-#' \item{call}{The matched call.}
-#' \item{effect}{The estimated effect type.}
+#' @return A \code{ria.test} object containing the requested effect estimates,
+#'   the matched call, and the estimand set.
 #'
 #' @importFrom checkmate assert_data_frame assert_function assert_numeric
 #'
@@ -68,11 +63,13 @@ ria.test <- function(data,
 										id = NULL,
 										d0 = NULL,
 										d1 = NULL,
-										effect = c("RT", "N", "RI", "O", "Te"),
+										estimand = c("test", "natural", "ria"),
 										weights = rep(1, nrow(data)),
 										learners = "glm",
 										nn_module = sequential_module(),
 										control = ria.test.control()) {
+
+	estimand <- match.arg(estimand)
 
 	# Perform initial checks
 	assert_data_frame(data[, c(trt, outcome, mediators, moc, covar, obs, id)])
@@ -82,17 +79,12 @@ ria.test <- function(data,
 	assert_function(nn_module)
 	assert_binary_0_1(data, outcome)
 	assert_binary_0_1(data, obs)
-	assert_effect_type(moc, match.arg(effect))
+	assert_estimand_compatibility(moc, estimand)
 	assert_numeric(weights, len = nrow(data), finite = TRUE, any.missing = FALSE)
 
 	weights <- normalize(weights)
 
-	params <- switch(match.arg(effect),
-									 N = natural,
-									 O = organic,
-									 RT = recanting_twin,
-									 RI = randomized,
-									 Te = ria.test_params)
+	params <- estimand_parameters[[estimand]]
 
 	# Create ria.test data object
 	cd <- ria.test_data(
@@ -111,14 +103,16 @@ ria.test <- function(data,
 		d1 = d1
 	)
 
-	# Create permuted Z
-	cd <- add_zp(cd, moc, control)
+	# Create the independent post-treatment-confounder draw used by RIAs.
+	if (length(params$randomized) > 0) {
+		cd <- add_zp(cd, control)
+	}
 
 	# Create folds for cross fitting
 	folds <- make_folds(cd@data, control$crossfit_folds, cd@vars@id, cd@vars@Y)
 
 	# Estimate \theta nuisance parameters
-	thetas <- estimate_theta(cd, thetas, folds, params, learners, control)
+	thetas <- estimate_theta(cd, folds, params, learners, control)
 
 	# Estimate density ratios, alpha natural
 	alpha_ns <- estimate_phi_n_alpha(cd, folds, params, nn_module, control)
@@ -131,21 +125,9 @@ ria.test <- function(data,
 	# Estimates ---------------------------------------------------------------
 
 	out <- list(
-		estimates = switch(match.arg(effect),
-											 N = calc_estimates_natural(eif_ns, weights),
-											 O = calc_estimates_organic(eif_ns, weights),
-											 RT = calc_estimates_rt(eif_ns, eif_rs, weights),
-											 RI = calc_estimates_ri(eif_rs, weights),
-											 Te = calc_estimates_te(eif_ns, eif_rs, weights)),
-		outcome_reg = thetas,
-		alpha_n = alpha_ns,
-		alpha_r = alpha_rs,
-		fits = list(
-			theta_n = thetas$theta_n$weights,
-			theta_r = thetas$theta_r$weights
-		),
+		estimates = calculate_estimates(estimand, eif_ns, eif_rs),
 		call = match.call(),
-		effect = match.arg(effect)
+		estimand = estimand
 	)
 
 	class(out) <- "ria.test"

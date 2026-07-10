@@ -7,7 +7,7 @@ generics::tidy
 #' @param x A `ria.test` object produced by a call to [ria.test::ria.test()].
 #' @param ... Unused, included for generic consistency only.
 #'
-#' @return A tidy [tibble::tibble()] summarizing information about the model.
+#' @return A data frame summarizing the requested effect estimates.
 #'
 #' @example inst/examples/examples.R
 #'
@@ -16,6 +16,7 @@ generics::tidy
 #' @export
 tidy.ria.test <- function(x, ...) {
 	out <- list_rbind(map(x$estimates, ife::tidy), names_to = "estimand")
-	class(out) <- c("tbl_df", "tbl", "data.frame")
+	out$statistic <- out$estimate / out$std.error
+	out$p.value <- 2 * stats::pnorm(-abs(out$statistic))
 	out
 }
