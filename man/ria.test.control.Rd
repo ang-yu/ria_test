@@ -11,7 +11,8 @@ ria.test.control(
   epochs = 100L,
   learning_rate = 0.01,
   batch_size = 64,
-  device = c("cpu", "cuda", "mps")
+  device = c("cpu", "cuda", "mps"),
+  torch_seed = NULL
 )
 }
 \arguments{
@@ -29,6 +30,11 @@ With larger sample sizes, a larger number will increase speed.}
 \item{batch_size}{[\code{numeric(1)}]\cr The batch size for mini-batch gradient descent.}
 
 \item{device}{[\code{character(1)}]\cr Object representing the device on which a \code{torch_tensor} is or will be allocated.}
+
+\item{torch_seed}{[\code{integer(1)}]\cr Optional seed for Torch's random-number
+generator. This controls neural-network initialization and dropout but does
+not affect R's random-number generator. Use \code{set.seed()} separately to
+control R-level randomness.}
 }
 \value{
 A list of control parameters

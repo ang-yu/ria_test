@@ -14,17 +14,16 @@ The implementation uses Riesz-regression machinery adapted from the upstream med
 
 ### Installation
 
-
 ``` r
 remotes::install_github("ang-yu/ria_test")
 ```
 
 ### Usage
 
-
 ``` r
 library(ria.test)
 
+# `set.seed()` controls R-level randomness; `torch_seed` controls Torch.
 set.seed(123)
 n <- 500
 w <- rnorm(n)
@@ -41,7 +40,8 @@ common <- list(
   mediators = "m",
   covar = "w",
   d0 = \(data, trt) rep(0, nrow(data)),
-  d1 = \(data, trt) rep(1, nrow(data))
+  d1 = \(data, trt) rep(1, nrow(data)),
+  control = ria.test.control(torch_seed = 123L)
 )
 
 # TE, TE^R, and TE - TE^R (the default)

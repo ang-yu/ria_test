@@ -42,7 +42,8 @@ if (torch::torch_is_installed()) {
 			crossfit_folds = 1L,
 			mlr3superlearner_folds = 2L,
 			zprime_folds = 2L,
-			epochs = 2L
+			epochs = 2L,
+			torch_seed = 123L
 		)
 	)
 

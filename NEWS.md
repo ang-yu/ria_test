@@ -1,3 +1,12 @@
+# ria.test 0.2.1
+
+## Reproducibility
+
+* Add `torch_seed` to `ria.test.control()` to control Torch neural-network
+  initialization and dropout independently of R's random-number generator.
+* Delay Torch device initialization until after R-randomized estimation steps,
+  so first-use Torch initialization cannot change cross-fitting or Z-prime folds.
+
 # ria.test 0.2.0
 
 ## Breaking changes

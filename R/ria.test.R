@@ -114,6 +114,12 @@ ria.test <- function(data,
 	# Estimate \theta nuisance parameters
 	thetas <- estimate_theta(cd, folds, params, learners, control)
 
+	# Initialize Torch only after all R-randomized steps are complete.
+	control$device <- torch::torch_device(control$device)
+	if (!is.null(control$torch_seed)) {
+		torch::torch_manual_seed(control$torch_seed)
+	}
+
 	# Estimate density ratios, alpha natural
 	alpha_ns <- estimate_phi_n_alpha(cd, folds, params, nn_module, control)
 	eif_ns <- calc_eifs(cd, alpha_ns, thetas, eif_n)
