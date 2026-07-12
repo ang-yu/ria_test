@@ -15,6 +15,8 @@ test_that("constructing control does not change R's random-number stream", {
 })
 
 test_that("torch_seed reproducibly resets Torch's random-number stream", {
+	skip_if_not(torch::torch_is_installed(), "Torch runtime is not installed")
+
 	torch::torch_manual_seed(10)
 	first <- as.numeric(torch::torch_rand(5))
 	torch::torch_manual_seed(10)
