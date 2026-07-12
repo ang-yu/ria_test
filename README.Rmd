@@ -48,32 +48,17 @@ m <- rnorm(n, a + l + w)
 y <- rnorm(n, a + l + m + w)
 dat <- data.frame(w, a, l, m, y)
 
-common <- list(
+test_fit <- ria.test(
   data = dat,
   trt = "a",
   outcome = "y",
   mediators = "m",
+  moc = "l",
   covar = "w",
   d0 = \(data, trt) rep(0, nrow(data)),
   d1 = \(data, trt) rep(1, nrow(data)),
   control = ria.test.control(torch_seed = 123L)
 )
-
-# TE, TE^R, TE - TE^R, NIE^R, and NDE^R (the default)
-test_fit <- do.call(ria.test, c(common, list(moc = "l")))
-
-# TE^R, NIE^R, and NDE^R
-ria_fit <- do.call(ria.test, c(
-  common,
-  list(moc = "l", estimand = "ria")
-))
-
-# TE, NIE, and NDE; valid only without treatment-induced
-# mediator-outcome confounding
-natural_fit <- do.call(ria.test, c(
-  common,
-  list(estimand = "natural")
-))
 
 tidy(test_fit)
 ```
