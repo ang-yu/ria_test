@@ -5,8 +5,9 @@ test_that("the package estimates only the quantities needed for the test", {
 	expect_length(params$natural, 2L)
 	expect_length(params$randomized, 3L)
 	expect_false("estimand" %in% names(formals(ria.test)))
-	expect_true("moc" %in% names(formals(ria.test)))
-	expect_identical(formals(ria.test)$moc, quote(expr = ))
+	expect_true(all(c("pre", "post") %in% names(formals(ria.test))))
+	expect_identical(formals(ria.test)$pre, quote(expr = ))
+	expect_identical(formals(ria.test)$post, quote(expr = ))
 })
 
 test_that("the test estimand set contains all Table 1 quantities", {

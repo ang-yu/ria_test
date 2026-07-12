@@ -9,8 +9,8 @@ ria.test(
   trt,
   outcome,
   mediators,
-  moc,
-  covar,
+  pre,
+  post,
   obs = NULL,
   id = NULL,
   d0 = NULL,
@@ -35,12 +35,12 @@ The column name of the outcome variable.}
 \item{mediators}{[\code{character}]\cr
 A vector containing the column names of the mediator variables.}
 
-\item{moc}{[\code{character}]\cr
-A vector containing the column names of the mediator-outcome confounders.}
-
-\item{covar}{[\code{character}]\cr
-An vector containing the column names of baseline covariates to be
+\item{pre}{[\code{character}]\cr
+A vector containing the column names of pre-treatment confounders to be
 controlled for.}
+
+\item{post}{[\code{character}]\cr
+A vector containing the column names of post-treatment confounders.}
 
 \item{obs}{[\code{character(1)}]\cr
 An optional column name (with values coded as 0 or 1) for whether or not the \code{outcome} is observed.
@@ -96,8 +96,8 @@ if (torch::torch_is_installed()) {
 		trt = "a",
 		outcome = "y",
 		mediators = "m",
-		moc = "l",
-		covar = "w",
+		pre = "w",
+		post = "l",
 		d0 = \(data, trt) rep(0, nrow(data)),
 		d1 = \(data, trt) rep(1, nrow(data)),
 		control = ria.test.control(

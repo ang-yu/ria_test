@@ -14,11 +14,11 @@
 #'  The column name of the outcome variable.
 #' @param mediators [\code{character}]\cr
 #'	A vector containing the column names of the mediator variables.
-#' @param moc [\code{character}]\cr
-#'  A vector containing the column names of the mediator-outcome confounders.
-#' @param covar [\code{character}]\cr
-#'  An vector containing the column names of baseline covariates to be
+#' @param pre [\code{character}]\cr
+#'  A vector containing the column names of pre-treatment confounders to be
 #'  controlled for.
+#' @param post [\code{character}]\cr
+#'  A vector containing the column names of post-treatment confounders.
 #' @param obs [\code{character(1)}]\cr
 #'  An optional column name (with values coded as 0 or 1) for whether or not the \code{outcome} is observed.
 #'  Must be provided if there is missingness in the outcome! Default is \code{NULL}.
@@ -51,8 +51,8 @@ ria.test <- function(data,
 										trt,
 										outcome,
 										mediators,
-										moc,
-										covar,
+										pre,
+										post,
 										obs = NULL,
 										id = NULL,
 										d0 = NULL,
@@ -63,14 +63,14 @@ ria.test <- function(data,
 										control = ria.test.control()) {
 
 	# Perform initial checks
-	assert_data_frame(data[, c(trt, outcome, mediators, moc, covar, obs, id)])
-	assert_not_missing(data, trt, covar, mediators, moc, obs)
+	assert_data_frame(data[, c(trt, outcome, mediators, pre, post, obs, id)])
+	assert_not_missing(data, trt, pre, mediators, post, obs)
 	assert_function(d0, nargs = 2, null.ok = TRUE)
 	assert_function(d1, nargs = 2, null.ok = TRUE)
 	assert_function(nn_module)
 	assert_binary_0_1(data, outcome)
 	assert_binary_0_1(data, obs)
-	checkmate::assert_character(moc, min.len = 1L, any.missing = FALSE)
+	checkmate::assert_character(post, min.len = 1L, any.missing = FALSE)
 	assert_numeric(weights, len = nrow(data), finite = TRUE, any.missing = FALSE)
 
 	weights <- normalize(weights)
@@ -84,8 +84,8 @@ ria.test <- function(data,
 			A = trt,
 			Y = outcome,
 			M = mediators,
-			Z = moc %??% NA_character_,
-			W = covar,
+			Z = post,
+			W = pre,
 			C = obs %??% NA_character_,
 			id = id %??% NA_character_
 		),

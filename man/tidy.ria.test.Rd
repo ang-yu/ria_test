@@ -34,8 +34,8 @@ if (torch::torch_is_installed()) {
 		trt = "a",
 		outcome = "y",
 		mediators = "m",
-		moc = "l",
-		covar = "w",
+		pre = "w",
+		post = "l",
 		d0 = \(data, trt) rep(0, nrow(data)),
 		d1 = \(data, trt) rep(1, nrow(data)),
 		control = ria.test.control(
