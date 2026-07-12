@@ -26,13 +26,16 @@ test_that("RIA effects use the randomized interventional decomposition", {
 	expect_equal(unlist(estimates), c("TE^R" = 7, "NIE^R" = 5, "NDE^R" = 2))
 })
 
-test_that("the falsification contrast is TE - TE^R", {
+test_that("the test estimand set contains all Table 1 quantities", {
 	natural_eif <- list("111" = 8, "000" = 1)
-	ria_eif <- list("1111" = 9, "0000" = 3)
+	ria_eif <- list("1111" = 9, "1100" = 5, "0000" = 3)
 	estimates <- ria.test:::calculate_test_effects(natural_eif, ria_eif)
 
-	expect_named(estimates, c("TE", "TE^R", "TE - TE^R"))
-	expect_equal(unlist(estimates), c("TE" = 7, "TE^R" = 6, "TE - TE^R" = 1))
+	expect_named(estimates, c("TE", "TE^R", "TE - TE^R", "NIE^R", "NDE^R"))
+	expect_equal(
+		unlist(estimates),
+		c("TE" = 7, "TE^R" = 6, "TE - TE^R" = 1, "NIE^R" = 4, "NDE^R" = 2)
+	)
 })
 
 test_that("estimand requirements reflect identification", {

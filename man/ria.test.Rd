@@ -59,8 +59,9 @@ A two argument function that specifies how treatment variables should be shifted
 See examples for how to specify shift functions for continuous, binary, and categorical exposures.}
 
 \item{estimand}{[\code{character(1)}]\cr
-The estimands to return. \code{"test"} returns \eqn{TE}, \eqn{TE^R}, and
-\eqn{TE - TE^R}; \code{"natural"} returns \eqn{TE}, \eqn{NIE}, and \eqn{NDE};
+The estimands to return. \code{"test"} returns \eqn{TE}, \eqn{TE^R},
+\eqn{TE - TE^R}, \eqn{NIE^R}, and \eqn{NDE^R};
+\code{"natural"} returns \eqn{TE}, \eqn{NIE}, and \eqn{NDE};
 and \code{"ria"} returns \eqn{TE^R}, \eqn{NIE^R}, and \eqn{NDE^R}.
 \code{moc} is required for \code{"test"} and \code{"ria"}, and must be
 \code{NULL} for \code{"natural"}.}

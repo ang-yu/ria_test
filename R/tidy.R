@@ -16,7 +16,6 @@ generics::tidy
 #' @export
 tidy.ria.test <- function(x, ...) {
 	out <- list_rbind(map(x$estimates, ife::tidy), names_to = "estimand")
-	out$statistic <- out$estimate / out$std.error
-	out$p.value <- 2 * stats::pnorm(-abs(out$statistic))
+	out$p.value <- 2 * stats::pnorm(-abs(out$estimate / out$std.error))
 	out
 }

@@ -57,7 +57,7 @@ common <- list(
   control = ria.test.control(torch_seed = 123L)
 )
 
-# TE, TE^R, and TE - TE^R (the default)
+# TE, TE^R, TE - TE^R, NIE^R, and NDE^R (the default)
 test_fit <- do.call(ria.test, c(common, list(moc = "l")))
 
 # TE^R, NIE^R, and NDE^R
