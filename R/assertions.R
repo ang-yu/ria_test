@@ -24,17 +24,3 @@ check_binary_0_1 <- function(data, x) {
 }
 
 assert_binary_0_1 <- checkmate::makeAssertionFunction(check_binary_0_1)
-
-check_estimand_compatibility <- function(moc, estimand) {
-	if (is.null(moc) && estimand %in% c("ria", "test")) {
-		return("Must provide mediator-outcome confounders for RIA estimation")
-	}
-
-	if (!is.null(moc) && estimand == "natural") {
-		return("Natural effects are not identified in the presence of treatment-induced mediator-outcome confounding")
-	}
-
-	TRUE
-}
-
-assert_estimand_compatibility <- checkmate::makeAssertionFunction(check_estimand_compatibility)

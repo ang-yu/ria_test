@@ -1,8 +1,8 @@
-#' Estimate natural effects, randomized interventional analogues, or their test
+#' Estimate randomized interventional analogues and their falsification test
 #'
-#' Estimate the natural mediation decomposition, its randomized interventional
-#' analogue (RIA), or the difference between the total effect and its RIA.
-#' The latter, \eqn{TE - TE^R}, is the test statistic for the composite null
+#' Estimate the total effect, its randomized interventional analogue (RIA),
+#' their difference, and the randomized interventional indirect and direct effects.
+#' \eqn{TE - TE^R} is the test statistic for the composite null
 #' \eqn{NIE = NIE^R} and \eqn{NDE = NDE^R}.
 #'
 #' @param data [\code{data.frame}]\cr
@@ -15,7 +15,7 @@
 #' @param mediators [\code{character}]\cr
 #'	A vector containing the column names of the mediator variables.
 #' @param moc [\code{character}]\cr
-#'  An optional vector containing the column names of the mediator-outcome confounders.
+#'  A vector containing the column names of the mediator-outcome confounders.
 #' @param covar [\code{character}]\cr
 #'  An vector containing the column names of baseline covariates to be
 #'  controlled for.
@@ -30,13 +30,6 @@
 #' @param d1 [\code{closure}]\cr
 #'  A two argument function that specifies how treatment variables should be shifted.
 #'  See examples for how to specify shift functions for continuous, binary, and categorical exposures.
-#' @param estimand [\code{character(1)}]\cr
-#'  The estimands to return. \code{"test"} returns \eqn{TE}, \eqn{TE^R},
-#'  \eqn{TE - TE^R}, \eqn{NIE^R}, and \eqn{NDE^R};
-#'  \code{"natural"} returns \eqn{TE}, \eqn{NIE}, and \eqn{NDE};
-#'  and \code{"ria"} returns \eqn{TE^R}, \eqn{NIE^R}, and \eqn{NDE^R}.
-#'  \code{moc} is required for \code{"test"} and \code{"ria"}, and must be
-#'  \code{NULL} for \code{"natural"}.
 #' @param weights [\code{numeric}]\cr
 #'  A optional vector of survey weights.
 #' @param learners [\code{character}]\cr
@@ -46,8 +39,8 @@
 #' @param control [\code{ria.test.control}]\cr
 #'  Control parameters for the estimation procedure. Use \code{ria.test.control()} to set these values.
 #'
-#' @return A \code{ria.test} object containing the requested effect estimates,
-#'   the matched call, and the estimand set.
+#' @return A \code{ria.test} object containing \eqn{TE}, \eqn{TE^R},
+#'   \eqn{TE - TE^R}, \eqn{NIE^R}, and \eqn{NDE^R}, along with the matched call.
 #'
 #' @importFrom checkmate assert_data_frame assert_function assert_numeric
 #'
@@ -58,19 +51,16 @@ ria.test <- function(data,
 										trt,
 										outcome,
 										mediators,
-										moc = NULL,
+										moc,
 										covar,
 										obs = NULL,
 										id = NULL,
 										d0 = NULL,
 										d1 = NULL,
-										estimand = c("test", "natural", "ria"),
 										weights = rep(1, nrow(data)),
 										learners = "glm",
 										nn_module = sequential_module(),
 										control = ria.test.control()) {
-
-	estimand <- match.arg(estimand)
 
 	# Perform initial checks
 	assert_data_frame(data[, c(trt, outcome, mediators, moc, covar, obs, id)])
@@ -80,12 +70,12 @@ ria.test <- function(data,
 	assert_function(nn_module)
 	assert_binary_0_1(data, outcome)
 	assert_binary_0_1(data, obs)
-	assert_estimand_compatibility(moc, estimand)
+	checkmate::assert_character(moc, min.len = 1L, any.missing = FALSE)
 	assert_numeric(weights, len = nrow(data), finite = TRUE, any.missing = FALSE)
 
 	weights <- normalize(weights)
 
-	params <- estimand_parameters[[estimand]]
+	params <- estimation_parameters
 
 	# Create ria.test data object
 	cd <- ria.test_data(
@@ -132,9 +122,8 @@ ria.test <- function(data,
 	# Estimates ---------------------------------------------------------------
 
 	out <- list(
-		estimates = calculate_estimates(estimand, eif_ns, eif_rs),
-		call = match.call(),
-		estimand = estimand
+		estimates = calculate_estimates(eif_ns, eif_rs),
+		call = match.call()
 	)
 
 	class(out) <- "ria.test"

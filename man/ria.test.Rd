@@ -2,20 +2,19 @@
 % Please edit documentation in R/ria.test.R
 \name{ria.test}
 \alias{ria.test}
-\title{Estimate natural effects, randomized interventional analogues, or their test}
+\title{Estimate randomized interventional analogues and their falsification test}
 \usage{
 ria.test(
   data,
   trt,
   outcome,
   mediators,
-  moc = NULL,
+  moc,
   covar,
   obs = NULL,
   id = NULL,
   d0 = NULL,
   d1 = NULL,
-  estimand = c("test", "natural", "ria"),
   weights = rep(1, nrow(data)),
   learners = "glm",
   nn_module = sequential_module(),
@@ -37,7 +36,7 @@ The column name of the outcome variable.}
 A vector containing the column names of the mediator variables.}
 
 \item{moc}{[\code{character}]\cr
-An optional vector containing the column names of the mediator-outcome confounders.}
+A vector containing the column names of the mediator-outcome confounders.}
 
 \item{covar}{[\code{character}]\cr
 An vector containing the column names of baseline covariates to be
@@ -58,14 +57,6 @@ See examples for how to specify shift functions for continuous, binary, and cate
 A two argument function that specifies how treatment variables should be shifted.
 See examples for how to specify shift functions for continuous, binary, and categorical exposures.}
 
-\item{estimand}{[\code{character(1)}]\cr
-The estimands to return. \code{"test"} returns \eqn{TE}, \eqn{TE^R},
-\eqn{TE - TE^R}, \eqn{NIE^R}, and \eqn{NDE^R};
-\code{"natural"} returns \eqn{TE}, \eqn{NIE}, and \eqn{NDE};
-and \code{"ria"} returns \eqn{TE^R}, \eqn{NIE^R}, and \eqn{NDE^R}.
-\code{moc} is required for \code{"test"} and \code{"ria"}, and must be
-\code{NULL} for \code{"natural"}.}
-
 \item{weights}{[\code{numeric}]\cr
 A optional vector of survey weights.}
 
@@ -79,13 +70,13 @@ for estimation of the outcome regressions. Default is \code{"glm"}, a main effec
 Control parameters for the estimation procedure. Use \code{ria.test.control()} to set these values.}
 }
 \value{
-A \code{ria.test} object containing the requested effect estimates,
-  the matched call, and the estimand set.
+A \code{ria.test} object containing \eqn{TE}, \eqn{TE^R},
+  \eqn{TE - TE^R}, \eqn{NIE^R}, and \eqn{NDE^R}, along with the matched call.
 }
 \description{
-Estimate the natural mediation decomposition, its randomized interventional
-analogue (RIA), or the difference between the total effect and its RIA.
-The latter, \eqn{TE - TE^R}, is the test statistic for the composite null
+Estimate the total effect, its randomized interventional analogue (RIA),
+their difference, and the randomized interventional indirect and direct effects.
+\eqn{TE - TE^R} is the test statistic for the composite null
 \eqn{NIE = NIE^R} and \eqn{NDE = NDE^R}.
 }
 \examples{
