@@ -1,6 +1,6 @@
 Package: ria.test
 Type: Package
-Title: ria.test
+Title: Testing Equality of Natural Mediation and Randomized Interventional Effects
 Version: 0.2.1
 Authors@R: 
     c(person(given = "Ang",
@@ -42,8 +42,8 @@ License: GPL (>= 3)
 Encoding: UTF-8
 Depends: 
     R (>= 4.2.0)
-URL: https://github.com/ang-yu/ria_test
-BugReports: https://github.com/ang-yu/ria_test/issues
+URL: https://github.com/ang-yu/ria.test
+BugReports: https://github.com/ang-yu/ria.test/issues
 Imports: 
     checkmate,
     Matrix,
